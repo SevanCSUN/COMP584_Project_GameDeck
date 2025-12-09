@@ -1,0 +1,181 @@
+<div class="game-edit-container">
+  <h1>Edit Game</h1>
+  <p class="subtitle">Select a console, then choose a game to edit its details.</p>
+
+  <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" class="game-form">
+    <!-- Console Selection -->
+    <div class="form-group">
+      <label for="platformId">Console *</label>
+      <select
+        id="platformId"
+        formControlName="platformId"
+        [class.invalid]="isFieldInvalid('platformId')"
+        class="form-control">
+        <option value="">-- Select a Console --</option>
+        @for (console of consoles; track console) {
+          <option [value]="console.id">
+            {{ console.manufacturer }} {{ console.name }}
+          </option>
+        }
+      </select>
+      @if (isFieldInvalid('platformId')) {
+        <div class="error-message">
+          {{ getFieldError('platformId') }}
+        </div>
+      }
+    </div>
+
+    <!-- Game Selection (only shown when console is selected) -->
+    @if (selectedConsoleId) {
+      <div class="form-group">
+        <label for="gameId">Game *</label>
+        <select
+          id="gameId"
+          formControlName="gameId"
+          [class.invalid]="isFieldInvalid('gameId')"
+          [disabled]="loading || games.length === 0"
+          class="form-control">
+          <option value="">-- Select a Game --</option>
+          @for (game of games; track game) {
+            <option [value]="game.id">
+              {{ game.title }}
+            </option>
+          }
+        </select>
+        @if (loading) {
+          <div class="loading-text">Loading games...</div>
+        }
+        @if (!loading && games.length === 0 && selectedConsoleId) {
+          <div class="info-text">
+            No games found for this console.
+          </div>
+        }
+        @if (isFieldInvalid('gameId')) {
+          <div class="error-message">
+            {{ getFieldError('gameId') }}
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Game Details Form (only shown when game is selected) -->
+    @if (selectedGameId) {
+      <div class="game-details">
+        <h2>Game Details</h2>
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            [class.invalid]="isFieldInvalid('title')"
+            class="form-control">
+            @if (isFieldInvalid('title')) {
+              <div class="error-message">
+                {{ getFieldError('title') }}
+              </div>
+            }
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="releaseDate">Release Date *</label>
+              <input
+                type="date"
+                id="releaseDate"
+                formControlName="releaseDate"
+                [class.invalid]="isFieldInvalid('releaseDate')"
+                class="form-control">
+                @if (isFieldInvalid('releaseDate')) {
+                  <div class="error-message">
+                    {{ getFieldError('releaseDate') }}
+                  </div>
+                }
+              </div>
+              <div class="form-group">
+                <label for="genre">Genre *</label>
+                <input
+                  type="text"
+                  id="genre"
+                  formControlName="genre"
+                  [class.invalid]="isFieldInvalid('genre')"
+                  class="form-control">
+                  @if (isFieldInvalid('genre')) {
+                    <div class="error-message">
+                      {{ getFieldError('genre') }}
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="developer">Developer *</label>
+                  <input
+                    type="text"
+                    id="developer"
+                    formControlName="developer"
+                    [class.invalid]="isFieldInvalid('developer')"
+                    class="form-control">
+                    @if (isFieldInvalid('developer')) {
+                      <div class="error-message">
+                        {{ getFieldError('developer') }}
+                      </div>
+                    }
+                  </div>
+                  <div class="form-group">
+                    <label for="numPlayers">Number of Players</label>
+                    <input
+                      type="number"
+                      id="numPlayers"
+                      formControlName="numPlayers"
+                      [class.invalid]="isFieldInvalid('numPlayers')"
+                      min="1"
+                      max="16"
+                      class="form-control">
+                      @if (isFieldInvalid('numPlayers')) {
+                        <div class="error-message">
+                          {{ getFieldError('numPlayers') }}
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea
+                      id="description"
+                      formControlName="description"
+                      [class.invalid]="isFieldInvalid('description')"
+                      rows="4"
+                    class="form-control"></textarea>
+                    @if (isFieldInvalid('description')) {
+                      <div class="error-message">
+                        {{ getFieldError('description') }}
+                      </div>
+                    }
+                  </div>
+                  <div class="form-actions">
+                    <button
+                      type="submit"
+                      [disabled]="gameForm.invalid || loading"
+                      class="btn btn-primary">
+                      {{ loading ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="onGameSelected(null)"
+                      class="btn btn-secondary">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              }
+            </form>
+
+            <!-- Messages -->
+            @if (error) {
+              <div class="alert alert-error">{{ error }}</div>
+            }
+            @if (success) {
+              <div class="alert alert-success">{{ success }}</div>
+            }
+          </div>
+

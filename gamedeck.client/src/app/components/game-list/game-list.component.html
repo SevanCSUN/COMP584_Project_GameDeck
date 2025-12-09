@@ -1,0 +1,65 @@
+<div class="game-list-container">
+  <h1>Video Games</h1>
+
+  <div class="filter-section">
+    <label for="consoleFilter">Filter by Console:</label>
+    <select
+      id="consoleFilter"
+      [(ngModel)]="selectedConsoleId"
+      (change)="onConsoleFilterChange()"
+      class="filter-select">
+      <option [value]="null">All Consoles</option>
+      @for (console of consoles; track console) {
+        <option [value]="console.id">
+          {{ console.manufacturer }} {{ console.name }}
+        </option>
+      }
+    </select>
+    @if (selectedConsoleId) {
+      <button (click)="clearFilter()" class="clear-btn">Clear Filter</button>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="loading">Loading games...</div>
+  }
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  @if (!loading && !error && games.length > 0) {
+    <table class="game-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Platform</th>
+          <th>Release Date</th>
+          <th>Genre</th>
+          <th>Developer</th>
+          <th>Players</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (game of games; track game) {
+          <tr>
+            <td>{{ game.id }}</td>
+            <td><strong>{{ game.title }}</strong></td>
+            <td>{{ game.platform?.name || 'N/A' }}</td>
+            <td>{{ game.releaseDate | date:'shortDate' }}</td>
+            <td>{{ game.genre }}</td>
+            <td>{{ game.developer }}</td>
+            <td>{{ game.numPlayers || 'N/A' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (!loading && !error && games.length === 0) {
+    <div class="no-data">
+      No games found.
+    </div>
+  }
+</div>
+

@@ -1,0 +1,6 @@
+@GameDeck.Server_HostAddress = http://localhost:5274
+
+GET {{GameDeck.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
