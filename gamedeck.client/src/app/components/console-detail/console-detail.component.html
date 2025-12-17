@@ -1,0 +1,66 @@
+<div class="console-detail-container">
+  <a routerLink="/consoles" class="back-link">← Back to Consoles</a>
+
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  @if (console$ | async; as console) {
+    @if (console) {
+      <div class="console-header">
+        <h1>{{ console.manufacturer }} {{ console.name }}</h1>
+        <div class="meta-row">
+          <div class="meta">Released: {{ console.releaseYear }}</div>
+          <a
+            class="btn"
+            [routerLink]="['/games/new']"
+            [queryParams]="{ platformId: console.id }">
+            + Add Game
+          </a>
+        </div>
+      </div>
+    } @else {
+      <div class="no-data">Console not found.</div>
+    }
+  }
+
+  <h2>Games</h2>
+
+  @if (games$ | async; as games) {
+    @if (games.length > 0) {
+      <table class="game-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Release Date</th>
+            <th>Genre</th>
+            <th>Developer</th>
+            <th>Players</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (game of games; track game.id) {
+            <tr
+              class="clickable"
+              role="link"
+              tabindex="0"
+              (click)="goToGame(game.id)"
+              (keydown.enter)="goToGame(game.id)">
+              <td>
+                <strong>{{ game.title }}</strong>
+              </td>
+              <td>{{ game.releaseDate | date:'shortDate' }}</td>
+              <td>{{ game.genre }}</td>
+              <td>{{ game.developer }}</td>
+              <td>{{ game.numPlayers ?? 'N/A' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="no-data">No games found for this console.</div>
+    }
+  }
+</div>
+
+

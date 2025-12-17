@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using GameDeckModel;
-using GameDeck.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +20,6 @@ builder.Services.AddIdentity<GameDeckUsers, IdentityRole>(options =>
     options.Password.RequireDigit = true;
 })
 .AddEntityFrameworkStores<GameDeckContext>();
-builder.Services.AddScoped<JwtHandler>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(c =>
 {
@@ -30,18 +27,9 @@ builder.Services.AddAuthentication(c =>
     c.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(c =>
 {
-    c.TokenValidationParameters = new()
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!))
-    };
+    // Auth0-issued access tokens (RS256 via JWKS)
+    c.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
+    c.Audience = builder.Configuration["Auth0:Audience"];
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -69,11 +57,6 @@ builder.Services.AddSwaggerGen(c =>
     {
         { securityScheme, Array.Empty<string>() }
     });
-
-    // Optional: Include XML comments for better documentation
-    // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    // c.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();

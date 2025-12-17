@@ -23,7 +23,5 @@ describe('GameEditComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  // TODO: Add more tests for form validation, console selection, game selection, etc.
 });
 

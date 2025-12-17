@@ -6,7 +6,30 @@
 
 h1 {
   color: #2c3e50;
+  margin: 0;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.add-btn {
+  display: inline-block;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  background: #111827;
+  color: #fff;
+  border: 1px solid #111827;
+}
+
+.add-btn:hover {
+  opacity: 0.95;
 }
 
 .filter-section {
@@ -71,6 +94,15 @@ h1 {
 
 .game-table tbody tr:hover {
   background-color: #f5f5f5;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:focus {
+  outline: 2px solid #34495e;
+  outline-offset: -2px;
 }
 
 .loading, .error, .no-data {

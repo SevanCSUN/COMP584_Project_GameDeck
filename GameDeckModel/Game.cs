@@ -44,6 +44,7 @@ public partial class Game
 
     [ForeignKey("PlatformId")]
     [InverseProperty("Games")]
-    public virtual GameConsole Platform { get; set; } = null!;
+    // Optional navigation: the API updates games using PlatformId, and we don't require clients to send Platform.
+    public virtual GameConsole? Platform { get; set; }
 }
 

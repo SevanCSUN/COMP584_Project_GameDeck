@@ -1,5 +1,8 @@
 <div class="game-list-container">
-  <h1>Video Games</h1>
+  <div class="page-header">
+    <h1>Video Games</h1>
+    <a routerLink="/games/new" class="add-btn">+ Add Game</a>
+  </div>
 
   <div class="filter-section">
     <label for="consoleFilter">Filter by Console:</label>
@@ -8,26 +11,23 @@
       [(ngModel)]="selectedConsoleId"
       (change)="onConsoleFilterChange()"
       class="filter-select">
-      <option [value]="null">All Consoles</option>
-      @for (console of consoles; track console) {
-        <option [value]="console.id">
-          {{ console.manufacturer }} {{ console.name }}
-        </option>
-      }
+      <option [ngValue]="null">All Consoles</option>
+      @for (console of (consoles$ | async); track console.id) {
+          <option [ngValue]="console.id">
+            {{ console.manufacturer }} {{ console.name }}
+          </option>
+        }
     </select>
     @if (selectedConsoleId) {
       <button (click)="clearFilter()" class="clear-btn">Clear Filter</button>
     }
   </div>
-
-  @if (loading) {
-    <div class="loading">Loading games...</div>
-  }
   @if (error) {
     <div class="error">{{ error }}</div>
   }
 
-  @if (!loading && !error && games.length > 0) {
+  @if ((games$ | async); as games) {
+    @if (!error && games.length > 0) {
     <table class="game-table">
       <thead>
         <tr>
@@ -41,11 +41,18 @@
         </tr>
       </thead>
       <tbody>
-        @for (game of games; track game) {
-          <tr>
+        @for (game of games; track $index) {
+          <tr
+            class="clickable"
+            role="link"
+            tabindex="0"
+            (click)="goToGame(game.id)"
+            (keydown.enter)="goToGame(game.id)">
             <td>{{ game.id }}</td>
-            <td><strong>{{ game.title }}</strong></td>
-            <td>{{ game.platform?.name || 'N/A' }}</td>
+            <td>
+              <strong>{{ game.title }}</strong>
+            </td>
+            <td>{{ game.platformName || 'N/A' }}</td>
             <td>{{ game.releaseDate | date:'shortDate' }}</td>
             <td>{{ game.genre }}</td>
             <td>{{ game.developer }}</td>
@@ -54,12 +61,13 @@
         }
       </tbody>
     </table>
-  }
+    }
 
-  @if (!loading && !error && games.length === 0) {
-    <div class="no-data">
-      No games found.
-    </div>
+    @if (!error && games.length === 0) {
+      <div class="no-data">
+        No games found.
+      </div>
+    }
   }
 </div>
 

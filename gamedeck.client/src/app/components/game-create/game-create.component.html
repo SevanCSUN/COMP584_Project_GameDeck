@@ -1,0 +1,86 @@
+<div class="game-create-container">
+  <div class="header">
+    <h1>Add Game</h1>
+    <a routerLink="/games" class="back-link">← Back to Games</a>
+  </div>
+
+  @if (error) {
+    <div class="alert alert-error">{{ error }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="game-form">
+    <div class="form-group">
+      <label for="platformId">Console *</label>
+      <select id="platformId" formControlName="platformId" [class.invalid]="isFieldInvalid('platformId')" class="form-control">
+        <option [ngValue]="null">-- Select a Console --</option>
+        @if (consoles$ | async; as consoles) {
+          @for (console of consoles; track console.id) {
+            <option [ngValue]="console.id">{{ console.manufacturer }} {{ console.name }}</option>
+          }
+        }
+      </select>
+      @if (isFieldInvalid('platformId')) {
+        <div class="error-message">{{ getFieldError('platformId') }}</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="title">Title *</label>
+      <input id="title" type="text" formControlName="title" [class.invalid]="isFieldInvalid('title')" class="form-control" />
+      @if (isFieldInvalid('title')) {
+        <div class="error-message">{{ getFieldError('title') }}</div>
+      }
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="releaseDate">Release Date *</label>
+        <input id="releaseDate" type="date" formControlName="releaseDate" [class.invalid]="isFieldInvalid('releaseDate')" class="form-control" />
+        @if (isFieldInvalid('releaseDate')) {
+          <div class="error-message">{{ getFieldError('releaseDate') }}</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="genre">Genre *</label>
+        <input id="genre" type="text" formControlName="genre" [class.invalid]="isFieldInvalid('genre')" class="form-control" />
+        @if (isFieldInvalid('genre')) {
+          <div class="error-message">{{ getFieldError('genre') }}</div>
+        }
+      </div>
+    </div>
+
+    <div class="form-row form-row--players">
+      <div class="form-group">
+        <label for="developer">Developer *</label>
+        <input id="developer" type="text" formControlName="developer" [class.invalid]="isFieldInvalid('developer')" class="form-control" />
+        @if (isFieldInvalid('developer')) {
+          <div class="error-message">{{ getFieldError('developer') }}</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="numPlayers">Number of Players</label>
+        <input id="numPlayers" type="number" min="1" max="16" formControlName="numPlayers" [class.invalid]="isFieldInvalid('numPlayers')" class="form-control" />
+        @if (isFieldInvalid('numPlayers')) {
+          <div class="error-message">{{ getFieldError('numPlayers') }}</div>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description *</label>
+      <textarea id="description" rows="4" formControlName="description" [class.invalid]="isFieldInvalid('description')" class="form-control"></textarea>
+      @if (isFieldInvalid('description')) {
+        <div class="error-message">{{ getFieldError('description') }}</div>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || loading">
+        {{ loading ? 'Saving...' : 'Create Game' }}
+      </button>
+      <a routerLink="/games" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+

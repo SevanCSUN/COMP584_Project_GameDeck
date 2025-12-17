@@ -1,0 +1,49 @@
+<div class="game-detail-container">
+  <a routerLink="/games" class="back-link">← Back to Games</a>
+
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  @if (game$ | async; as game) {
+    @if (game) {
+      <div class="header">
+        <h1>{{ game.title }}</h1>
+        <div class="sub">
+          <a [routerLink]="['/consoles', game.platformId]" class="platform-link">
+            {{ game.platformName }}
+          </a>
+          <span class="dot">•</span>
+          <span>{{ game.releaseDate | date:'longDate' }}</span>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" (click)="editGame(game)">Edit Game</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="label">Genre</div>
+          <div class="value">{{ game.genre }}</div>
+        </div>
+        <div class="card">
+          <div class="label">Developer</div>
+          <div class="value">{{ game.developer }}</div>
+        </div>
+        <div class="card">
+          <div class="label">Players</div>
+          <div class="value">{{ game.numPlayers ?? 'N/A' }}</div>
+        </div>
+      </div>
+
+      <div class="desc">
+        <h2>Description</h2>
+        <p>{{ game.description }}</p>
+      </div>
+    } @else {
+      <div class="no-data">Game not found.</div>
+    }
+  }
+</div>
+
+

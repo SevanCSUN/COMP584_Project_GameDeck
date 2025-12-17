@@ -1,7 +1,10 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Game } from '../../models/game.model';
+import { Router, RouterLink } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { GameDto } from '../../models/game-dto.model';
 import { Console } from '../../models/console.model';
 import { GameService } from '../../services/game.service';
 import { ConsoleService } from '../../services/console.service';
@@ -9,20 +12,20 @@ import { ConsoleService } from '../../services/console.service';
 @Component({
   selector: 'app-game-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AsyncPipe, RouterLink],
   templateUrl: './game-list.component.html',
   styleUrls: ['./game-list.component.css']
 })
 export class GameListComponent implements OnInit {
-  games: Game[] = [];
-  consoles: Console[] = [];
+  games$!: Observable<GameDto[]>;
+  consoles$!: Observable<Console[]>;
   selectedConsoleId: number | null = null;
-  loading = true;
   error: string | null = null;
 
   constructor(
     private gameService: GameService,
-    private consoleService: ConsoleService
+    private consoleService: ConsoleService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -31,31 +34,25 @@ export class GameListComponent implements OnInit {
   }
 
   loadConsoles(): void {
-    this.consoleService.getConsoles().subscribe({
-      next: (data) => {
-        this.consoles = data;
-      },
-      error: (err) => {
+    this.consoles$ = this.consoleService.getConsoles().pipe(
+      catchError(err => {
         console.error('Error loading consoles:', err);
-      }
-    });
+        // Keep the UI usable even if consoles fail
+        return of([]);
+      })
+    );
   }
 
   loadGames(): void {
-    this.loading = true;
     this.error = null;
-    
-    this.gameService.getGames(this.selectedConsoleId || undefined).subscribe({
-      next: (data) => {
-        this.games = data;
-        this.loading = false;
-      },
-      error: (err) => {
+
+    this.games$ = this.gameService.getGames(this.selectedConsoleId || undefined).pipe(
+      catchError(err => {
         this.error = 'Failed to load games. Make sure the API is running.';
-        this.loading = false;
         console.error('Error loading games:', err);
-      }
-    });
+        return of([]);
+      })
+    );
   }
 
   onConsoleFilterChange(): void {
@@ -65,6 +62,10 @@ export class GameListComponent implements OnInit {
   clearFilter(): void {
     this.selectedConsoleId = null;
     this.loadGames();
+  }
+
+  goToGame(gameId: number): void {
+    this.router.navigate(['/games', gameId]);
   }
 }
 

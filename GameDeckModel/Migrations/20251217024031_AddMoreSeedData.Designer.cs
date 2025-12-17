@@ -4,6 +4,7 @@ using GameDeckModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameDeckModel.Migrations
 {
     [DbContext(typeof(GameDeckContext))]
-    partial class GameDeckContextModelSnapshot : ModelSnapshot
+    [Migration("20251217024031_AddMoreSeedData")]
+    partial class AddMoreSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,7 +108,7 @@ namespace GameDeckModel.Migrations
                             Id = 3,
                             Description = "3D platforming adventure with Cappy",
                             Developer = "Nintendo",
-                            Genre = "Platformer",
+                            Genre = "Platform",
                             NumPlayers = 2,
                             PlatformId = 1,
                             ReleaseDate = new DateTime(2017, 10, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -127,7 +130,7 @@ namespace GameDeckModel.Migrations
                             Id = 5,
                             Description = "Revolutionary 3D platformer",
                             Developer = "Nintendo",
-                            Genre = "Platformer",
+                            Genre = "Platform",
                             NumPlayers = 1,
                             PlatformId = 4,
                             ReleaseDate = new DateTime(1996, 6, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -193,22 +196,11 @@ namespace GameDeckModel.Migrations
                             Id = 11,
                             Description = "Classic high-speed platformer.",
                             Developer = "Sega",
-                            Genre = "Platformer",
+                            Genre = "Platform",
                             NumPlayers = 1,
                             PlatformId = 10,
                             ReleaseDate = new DateTime(1991, 6, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Sonic the Hedgehog"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Description = "Gothic action RPG set in the city of Yharnam.",
-                            Developer = "FromSoftware",
-                            Genre = "Action RPG",
-                            NumPlayers = 2,
-                            PlatformId = 5,
-                            ReleaseDate = new DateTime(2015, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Bloodborne"
                         });
                 });
 

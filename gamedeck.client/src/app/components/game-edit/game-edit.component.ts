@@ -1,10 +1,12 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Game } from '../../models/game.model';
 import { Console } from '../../models/console.model';
 import { GameService } from '../../services/game.service';
 import { ConsoleService } from '../../services/console.service';
+import { GameDto } from '../../models/game-dto.model';
 
 @Component({
   selector: 'app-game-edit',
@@ -16,9 +18,11 @@ import { ConsoleService } from '../../services/console.service';
 export class GameEditComponent implements OnInit {
   gameForm: FormGroup;
   consoles: Console[] = [];
-  games: Game[] = [];
+  games: GameDto[] = [];
   selectedConsoleId: number | null = null;
   selectedGameId: number | null = null;
+  private preselectConsoleId: number | null = null;
+  private preselectGameId: number | null = null;
   loading = false;
   error: string | null = null;
   success: string | null = null;
@@ -26,7 +30,8 @@ export class GameEditComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private gameService: GameService,
-    private consoleService: ConsoleService
+    private consoleService: ConsoleService,
+    private route: ActivatedRoute
   ) {
     this.gameForm = this.fb.group({
       platformId: ['', Validators.required],
@@ -41,6 +46,11 @@ export class GameEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const platformIdParam = this.route.snapshot.queryParamMap.get('platformId');
+    const gameIdParam = this.route.snapshot.queryParamMap.get('gameId');
+    this.preselectConsoleId = platformIdParam ? Number(platformIdParam) : null;
+    this.preselectGameId = gameIdParam ? Number(gameIdParam) : null;
+
     this.loadConsoles();
     
     // Watch for console selection changes
@@ -58,6 +68,11 @@ export class GameEditComponent implements OnInit {
     this.consoleService.getConsoles().subscribe({
       next: (data) => {
         this.consoles = data;
+
+        // Apply preselection after consoles load (so dropdown has values)
+        if (this.preselectConsoleId) {
+          this.gameForm.patchValue({ platformId: this.preselectConsoleId });
+        }
       },
       error: (err) => {
         this.error = 'Failed to load consoles.';
@@ -85,6 +100,13 @@ export class GameEditComponent implements OnInit {
       next: (data) => {
         this.games = data;
         this.loading = false;
+
+        // If deep-linked with a gameId, select it once the list is loaded
+        if (this.preselectGameId && this.games.some(g => g.id === this.preselectGameId)) {
+          this.gameForm.patchValue({ gameId: this.preselectGameId });
+          // Clear after first use so changing consoles later doesn't auto-jump
+          this.preselectGameId = null;
+        }
       },
       error: (err) => {
         this.error = 'Failed to load games for selected console.';

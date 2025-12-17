@@ -25,6 +25,12 @@
   gap: 2rem;
 }
 
+.separator {
+  width: 1px;
+  background: rgba(236, 240, 241, 0.35);
+  margin: 0 0.5rem;
+}
+
 .nav-links a {
   color: #ecf0f1;
   text-decoration: none;

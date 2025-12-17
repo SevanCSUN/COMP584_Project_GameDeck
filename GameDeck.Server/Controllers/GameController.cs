@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using GameDeck.Server.DTOs;
 using GameDeckModel;
 
 namespace GameDeck.Server.Controllers
@@ -11,25 +12,51 @@ namespace GameDeck.Server.Controllers
 
         // GET: api/Game
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames([FromQuery] int? platformId = null)
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetGames([FromQuery] int? platformId = null)
         {
-            var query = context.Games.Include(g => g.Platform).AsQueryable();
+            var query = context.Games.AsQueryable();
             
             if (platformId.HasValue)
             {
                 query = query.Where(g => g.PlatformId == platformId.Value);
             }
-            
-            return await query.OrderBy(g => g.Title).ToListAsync();
+
+            return await query
+                .OrderBy(g => g.Title)
+                .Select(g => new GameDto
+                {
+                    id = g.Id,
+                    platformId = g.PlatformId,
+                    platformName = g.Platform.Name,
+                    title = g.Title,
+                    releaseDate = g.ReleaseDate,
+                    genre = g.Genre,
+                    developer = g.Developer,
+                    description = g.Description,
+                    numPlayers = g.NumPlayers
+                })
+                .ToListAsync();
         }
 
         // GET: api/Game/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDto>> GetGame(int id)
         {
             var game = await context.Games
-                .Include(g => g.Platform)
-                .FirstOrDefaultAsync(g => g.Id == id);
+                .Where(g => g.Id == id)
+                .Select(g => new GameDto
+                {
+                    id = g.Id,
+                    platformId = g.PlatformId,
+                    platformName = g.Platform.Name,
+                    title = g.Title,
+                    releaseDate = g.ReleaseDate,
+                    genre = g.Genre,
+                    developer = g.Developer,
+                    description = g.Description,
+                    numPlayers = g.NumPlayers
+                })
+                .FirstOrDefaultAsync();
             
             if (game == null)
             {

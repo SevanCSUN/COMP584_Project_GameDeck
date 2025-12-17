@@ -22,9 +22,7 @@ namespace GameDeck.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GameConsole>> GetConsole(int id)
         {
-            var gameConsole = await context.GameConsoles
-                .Include(c => c.Games)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var gameConsole = await context.GameConsoles.FindAsync(id);
             
             if (gameConsole == null)
             {

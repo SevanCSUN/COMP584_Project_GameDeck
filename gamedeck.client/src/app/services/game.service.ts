@@ -2,25 +2,26 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Game } from '../models/game.model';
+import { GameDto } from '../models/game-dto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private apiUrl = '/api/game';
+  private apiUrl = '/api/Game';
 
   constructor(private http: HttpClient) { }
 
-  getGames(platformId?: number): Observable<Game[]> {
+  getGames(platformId?: number): Observable<GameDto[]> {
     let params = new HttpParams();
     if (platformId) {
       params = params.set('platformId', platformId.toString());
     }
-    return this.http.get<Game[]>(this.apiUrl, { params });
+    return this.http.get<GameDto[]>(this.apiUrl, { params });
   }
 
-  getGame(id: number): Observable<Game> {
-    return this.http.get<Game>(`${this.apiUrl}/${id}`);
+  getGame(id: number): Observable<GameDto> {
+    return this.http.get<GameDto>(`${this.apiUrl}/${id}`);
   }
 
   createGame(game: Game): Observable<Game> {

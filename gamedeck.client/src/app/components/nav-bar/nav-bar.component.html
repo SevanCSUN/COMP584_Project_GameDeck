@@ -5,7 +5,13 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
       <a routerLink="/consoles" routerLinkActive="active">Consoles</a>
       <a routerLink="/games" routerLinkActive="active">Games</a>
-      <a routerLink="/game-edit" routerLinkActive="active">Edit Game</a>
+      <span class="separator"></span>
+
+      @if (authService.isAuthenticated$ | async) {
+        <a (click)="logout()">Logout</a>
+      } @else {
+        <a (click)="login()">Login</a>
+      }
     </div>
   </div>
 </nav>

@@ -1,14 +1,15 @@
 <div class="console-list-container">
-  <h1>Video Game Consoles</h1>
+  <div class="page-header">
+    <h1>Video Game Consoles</h1>
+    <a routerLink="/consoles/new" class="add-btn">+ Add Console</a>
+  </div>
 
-  @if (loading) {
-    <div class="loading">Loading consoles...</div>
-  }
   @if (error) {
     <div class="error">{{ error }}</div>
   }
 
-  @if (!loading && !error && consoles.length > 0) {
+  @if ((consoles$ | async); as consoles) {
+    @if (!error && consoles.length > 0) {
     <table class="console-table">
       <thead>
         <tr>
@@ -19,8 +20,13 @@
         </tr>
       </thead>
       <tbody>
-        @for (console of consoles; track console) {
-          <tr>
+        @for (console of consoles; track console.id) {
+          <tr
+            class="clickable"
+            role="link"
+            tabindex="0"
+            (click)="goToConsole(console.id)"
+            (keydown.enter)="goToConsole(console.id)">
             <td>{{ console.id }}</td>
             <td>{{ console.manufacturer }}</td>
             <td>{{ console.name }}</td>
@@ -29,12 +35,13 @@
         }
       </tbody>
     </table>
-  }
+    }
 
-  @if (!loading && !error && consoles.length === 0) {
-    <div class="no-data">
-      No consoles found.
-    </div>
+    @if (!error && consoles.length === 0) {
+      <div class="no-data">
+        No consoles found.
+      </div>
+    }
   }
 </div>
 
